@@ -46,8 +46,8 @@
           @click="loadUploaded"
           :class="
             pendingSchema
-              ? 'px-3 py-1 rounded bg-blue-600 text-white'
-              : 'px-3 py-1 rounded my-4 bg-gray-600 text-gray-300 cursor-not-allowed'
+              ? 'px-3 py-1 rounded bg-green-600 mt-6 text-white'
+              : 'px-3 py-1 rounded my-4 bg-gray-600 mt-6 text-gray-300 cursor-not-allowed'
           "
         >
           Load uploaded
