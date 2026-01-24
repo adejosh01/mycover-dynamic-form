@@ -1,10 +1,11 @@
 # Dynamic Form Builder - MyCover Assessment
 
-A small Nuxt 4 app that renders a dynamic form from a JSON Schema. It supports common field types, validations, conditional logic (simple `if/then/else` and `x-required_if`), dependent dropdowns, and file inputs. This README focuses on getting the project running locally and how to use the schema upload feature.
+A  Nuxt 4 app that renders a dynamic form from a JSON Schema. It supports common field types, validations, conditional logic (simple `if/then/else` and `x-required_if`), dependent dropdowns, and file inputs. This README focuses on getting the project running locally and how to use the schema upload feature.
 
 ## Quick summary
 
 - Framework: Nuxt 4 (Vue 3)
+- UI - Nuxt UI
 - Package manager used in the project: pnpm (recommended)
 - Default port: http://localhost:3000
 
