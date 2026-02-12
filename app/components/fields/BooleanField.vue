@@ -1,5 +1,9 @@
 <template>
-  <UFormItem :label="field?.['x-label']" :required="required" :error="error">
+  <UFormItem
+    :label="field?.['x-label']"
+    :required="required"
+    :error="error"
+  >
     <div class="flex gap-4">
       <label
         v-for="opt in field?.['x-source']?.data || []"
@@ -11,7 +15,7 @@
           :value="opt.value"
           :checked="opt.value === localValue"
           @change="onChange(opt.value)"
-        />
+        >
         {{ opt.label }}
       </label>
     </div>
@@ -31,7 +35,7 @@ const emit = defineEmits(['update:modelValue'])
 
 const localValue = ref(props.modelValue)
 
-watch(() => props.modelValue, (val) => (localValue.value = val))
+watch(() => props.modelValue, val => (localValue.value = val))
 
 const onChange = (value: any) => {
   localValue.value = value

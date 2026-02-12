@@ -6,7 +6,7 @@
       :placeholder="field?.['x-description'] || ''"
       class="form-control"
       @input="onInput"
-    />
+    >
   </div>
 </template>
 
@@ -23,7 +23,7 @@ const emit = defineEmits(['update:modelValue'])
 
 const localValue = ref(props.modelValue)
 
-watch(() => props.modelValue, (val) => (localValue.value = val))
+watch(() => props.modelValue, val => (localValue.value = val))
 
 const onInput = (e: Event) => {
   const value = (e.target as HTMLInputElement).value

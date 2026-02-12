@@ -1,8 +1,21 @@
 <template>
   <div>
-    <select :value="localValue" @change="onChange($event)" class="form-control">
-      <option value="" disabled>Select {{ field?.['x-label'] }}</option>
-      <option v-for="opt in options" :key="opt.value" :value="opt.value">
+    <select
+      :value="localValue"
+      class="form-control"
+      @change="onChange($event)"
+    >
+      <option
+        value=""
+        disabled
+      >
+        Select {{ field?.['x-label'] }}
+      </option>
+      <option
+        v-for="opt in options"
+        :key="opt.value"
+        :value="opt.value"
+      >
         {{ opt.label }}
       </option>
     </select>
@@ -23,7 +36,7 @@ const emit = defineEmits(['update:modelValue'])
 
 const localValue = ref(props.modelValue)
 
-watch(() => props.modelValue, (val) => (localValue.value = val))
+watch(() => props.modelValue, val => (localValue.value = val))
 
 const options = computed(() => {
   const data = props.field?.['x-source']?.data

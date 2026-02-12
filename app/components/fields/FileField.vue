@@ -1,12 +1,21 @@
 <template>
-  <UFormItem :label="field?.['x-label']" :required="required" :error="error">
+  <UFormItem
+    :label="field?.['x-label']"
+    :required="required"
+    :error="error"
+  >
     <input
       type="file"
-       class="form-control"
+      class="form-control"
       :accept="field?.['x-source']?.data?.accept || '*/*'"
       @change="onFileChange"
-    />
-    <p v-if="localValue" class="text-sm text-gray-500">{{ localValue.name }}</p>
+    >
+    <p
+      v-if="localValue"
+      class="text-sm text-gray-500"
+    >
+      {{ localValue.name }}
+    </p>
   </UFormItem>
 </template>
 
