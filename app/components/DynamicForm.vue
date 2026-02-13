@@ -6,16 +6,15 @@
     >
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FieldWrapper
-          v-for="([key, field], idx) in sortedFields"
-          v-if="isVisible && isVisible(key as string, field as Record<string, any>)"
+          v-for="([key, field]) in visibleFields"
           :key="key"
-          :model-value="formState[key as string]"
-          :field="field as Record<string, any>"
-          :component-type="resolveComponent(field as Record<string, any>)"
-          :required="isRequired(key as string, field as Record<string, any>)"
-          :error="errors[key as string]"
+          :model-value="formState[key]"
+          :field="field"
+          :component-type="resolveComponent(field)"
+          :required="isRequired(key, field)"
+          :error="errors[key]"
           :form-state="formState"
-          @update:model-value="value => (formState[key as string] = value)"
+          @update:model-value="value => (formState[key] = value)"
         />
       </div>
 
@@ -55,14 +54,18 @@ import BooleanField from './fields/BooleanField.vue'
 
 const props = defineProps({ schema: Object })
 
-const formState = reactive({})
-const errors = reactive({})
+const formState = reactive<Record<string, any>>({})
+const errors = reactive<Record<string, string | undefined>>({})
 const submittedData = ref(null)
 
-const sortedFields = computed(() => {
+const sortedFields = computed<[string, Record<string, any>][]>(() => {
   return Object.entries(props.schema?.properties || {}).sort(
-    ([, a], [, b]) => (a['x-order'] ?? 999) - (b['x-order'] ?? 999)
-  )
+    ([, a], [, b]) => ((a as Record<string, any>)['x-order'] ?? 999) - ((b as Record<string, any>)['x-order'] ?? 999)
+  ) as [string, Record<string, any>][]
+})
+
+const visibleFields = computed<[string, Record<string, any>][]>(() => {
+  return sortedFields.value.filter(([key, field]) => isVisible(key, field))
 })
 
 const resolveComponent = (field: Record<string, any>) => {
@@ -86,8 +89,8 @@ const isRequired = (key: string, field: Record<string, any>): boolean => {
       // check each property condition in if.properties
       let matched = true
       for (const [propName, cond] of Object.entries(ifBlock.properties)) {
-        if ((cond as any).const !== undefined) {
-          if ((formState as Record<string, any>)[propName] !== (cond as any).const) {
+        if ((cond as { const?: any }).const !== undefined) {
+          if (formState[propName] !== (cond as { const: any }).const) {
             matched = false
             break
           }
@@ -99,7 +102,7 @@ const isRequired = (key: string, field: Record<string, any>): boolean => {
         if (props.schema?.else?.required?.includes(key)) return true
       }
     }
-  } catch (e) {
+  } catch {
     // ignore and continue
   }
 
@@ -111,7 +114,7 @@ const isRequired = (key: string, field: Record<string, any>): boolean => {
   const expected = rule?.value
   const operator = rule?.operator || 'eq'
 
-  const actual = (formState as Record<string, any>)[dep]
+  const actual = formState[dep]
   if (operator === 'eq') return actual === expected
   if (operator === 'neq') return actual !== expected
   return false
@@ -127,14 +130,16 @@ const isVisible = (key: string, field: Record<string, any>): boolean => {
   const expected = rule?.value
   const operator = rule?.operator || 'eq'
 
-  const actual = (formState as Record<string, any>)[dep]
+  const actual = formState[dep]
   if (operator === 'eq') return actual === expected
   if (operator === 'neq') return actual !== expected
   return true
 }
 
 const validateForm = () => {
-  Object.keys(errors).forEach(k => delete errors[k])
+  Object.keys(errors).forEach(k => {
+    errors[k] = undefined
+  })
   for (const [key, field] of sortedFields.value) {
     const value = formState[key]
     if (isRequired(key, field) && (!value || value === '')) {
@@ -153,7 +158,7 @@ const validateForm = () => {
       }
     }
   }
-  return Object.keys(errors).length === 0
+  return Object.values(errors).filter(Boolean).length === 0
 }
 
 const submitForm = () => {
@@ -170,18 +175,18 @@ watch(() => formState, () => {
     if (field['x-source']?.data?.dependsOn) {
       const dep = field['x-source'].data.dependsOn
       const options = field['x-source'].data.options[formState[dep]] || []
-      if (!options.find(o => o.value === formState[key])) {
+      if (!options.find((o: any) => o.value === formState[key])) {
         formState[key] = null
-        delete errors[key]
+        errors[key] = undefined
       }
     }
 
     // visibility: clear value and errors when field is hidden
-    if (!isVisible(key as string, field as Record<string, any>)) {
-      if ((formState as Record<string, any>)[key as string] !== undefined) {
-        formState[key as string] = null
+    if (!isVisible(key, field)) {
+      if (formState[key] !== undefined) {
+        formState[key] = null
       }
-      delete errors[key as string]
+      errors[key] = undefined
     }
   }
 }, { deep: true })
