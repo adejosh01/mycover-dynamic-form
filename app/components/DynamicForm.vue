@@ -5,17 +5,17 @@
       @submit.prevent="submitForm"
     >
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <FieldWrapper
-          v-for="([key, field]) in visibleFields"
-          :key="key"
-          :model-value="formState[key]"
-          :field="field"
-          :component-type="resolveComponent(field)"
-          :required="isRequired(key, field)"
-          :error="errors[key]"
-          :form-state="formState"
-          @update:model-value="value => (formState[key] = value)"
-        />
+          <FieldWrapper
+            v-for="(item, idx) in visibleFields"
+            :key="item[0]"
+            :model-value="formState[item[0]]"
+            :field="item[1]"
+            :component-type="resolveComponent(item[1])"
+            :required="isRequired(item[0], item[1])"
+            :error="errors[item[0]]"
+            :form-state="formState"
+            @update:model-value="value => (formState[item[0]] = value)"
+          />
       </div>
 
       <div class="flex items-center justify-end">
